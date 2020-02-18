@@ -12,7 +12,9 @@ public class Player : MonoBehaviour
     public float BounceVelocity = 3;
 
     private bool walk , walkL ,walkR , jump;
-    
+
+    public Sprite EmptyQuestionBlock;
+    public GameObject Coin;
     public enum state
     {
         Idle,
@@ -158,7 +160,9 @@ public class Player : MonoBehaviour
             if (wallHit.collider.CompareTag("Enemy"))
             {
                 playerState = state.Dead;
+                Application.LoadLevel("End");
             }
+            
             pos.x -= velocity.x * Time.deltaTime * dir;
         }
         return pos;
@@ -240,8 +244,17 @@ public class Player : MonoBehaviour
             {
                 playerState = state.Dead;
             }
+           
             pos.y = CeilHit.collider.bounds.center.y - CeilHit.collider.bounds.size.y / 2 - 1f;
 
+            if (CeilHit.collider.CompareTag("QuestionBlock"))
+            {
+                CeilHit.collider.GetComponent<Animator>().enabled = false;
+                CeilHit.collider.GetComponent<SpriteRenderer>().sprite = EmptyQuestionBlock;
+
+                Vector3 coinPos = new Vector3(CeilHit.collider.transform.localPosition.x, CeilHit.collider.transform.localPosition.y + CeilHit.collider.bounds.size.y / 2 + 1f, CeilHit.collider.transform.localPosition.z);
+                Instantiate(Coin,coinPos,Quaternion.identity);
+            }
             Fall();
         }
         return pos;
